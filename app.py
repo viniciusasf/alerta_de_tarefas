@@ -45,15 +45,11 @@ def init():
         if (data_agenda in data) and (hora_agenda in hora):
             msg = f'TREINAMENTO AGENDADO COM CLIENTE: {cliente} às {hora_agenda} Observação: {obs_agenda}'
             win32api.MessageBox(0, msg, f'TREINAMENTO COM: {cliente}', 0x00001000)
-            break
-        else:
-            win32api.MessageBox(0, 'SEM AGENDAMENTO', f'{data} {hora}', 0x00001000)
-            break
 
 
-schedule.every(10).minutes.do(init)
+schedule.every(30).seconds.do(init)
 
 if __name__ == '__main__':
     while True:
         schedule.run_pending()
-        time.sleep(600)
+        time.sleep(30)
