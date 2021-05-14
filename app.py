@@ -1,8 +1,10 @@
 import sqlite3
 from datetime import datetime
-import schedule
+import sched
 import win32api
-import time
+
+
+scheduler = sched.scheduler()
 
 
 def database():
@@ -32,24 +34,26 @@ def agendamento():
     )
 
 
+def viwer():
+    pass
+
+
 def init():
     conn = sqlite3.connect('agendamento.db')
     c = conn.cursor()
 
-    date_time = datetime.now()
-    data = date_time.strftime("%d/%m")
-    hora = date_time.strftime("%H:%M")
+    data = datetime.now()
+    data_atual = data.strftime("%d/%m %H:%M")
 
-    for cliente, data_agenda, hora_agenda, obs_agenda in c.execute('SELECT cliente, data, hora, obs FROM '
-                                                                   'tbl_agendamento'):
-        if (data_agenda in data) and (hora_agenda in hora):
+    for cliente, data_agenda, hora_agenda, obs_agenda in c.execute('SELECT cliente, data, hora, obs '
+                                                                   'FROM tbl_agendamento'):
+        if data_agenda and hora_agenda in data_atual:
             msg = f'TREINAMENTO AGENDADO COM CLIENTE: {cliente} às {hora_agenda} Observação: {obs_agenda}'
             win32api.MessageBox(0, msg, f'TREINAMENTO COM: {cliente}', 0x00001000)
 
+    scheduler.enter(delay=30, priority=0, action=init)
 
-schedule.every(30).seconds.do(init)
 
 if __name__ == '__main__':
-    while True:
-        schedule.run_pending()
-        time.sleep(30)
+    init()
+    scheduler.run(blocking=True)
